@@ -3,7 +3,7 @@ name: AWS Dev server Deployment
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -33,5 +33,8 @@ jobs:
             echo "Install app dependencies"
             yarn install
 
+            echo "Build"
+            rm -rf dist && yarn build
+
             echo "Restart pm2"
-            pm2 start index.js
+            pm2 start dist/index.js
