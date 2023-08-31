@@ -10,6 +10,8 @@ import {
   getTotalLongPosition,
 } from './utils/db.js'
 
+const { parseUnits } = ethers.utils;
+
 export default function routes(app) {
   app.get('/api/fees_summary', async (req, res, next) => {
     let totalFees
@@ -43,10 +45,25 @@ export default function routes(app) {
     })
   })
 
-  app.get('/api/volumes', async (req, res, next) => {
-    let totalVol, dayVol
+  app.get('/api/total_volume', async (req, res, next) => {
+    let totalVol
     try {
       totalVol = await getTotalVolume()
+    } catch (ex) {
+      next(ex)
+      return
+    }
+
+    res.set('Cache-Control', 'max-age=60')
+    res.send({
+      totalVolume: parseUnits(totalVol[0].total_volume.toString(), '30').toString(),
+      lastUpdatedAt: Math.floor(Date.now() / 1000),
+    })
+  })
+
+  app.get('/api/24h_volume', async (req, res, next) => {
+    let dayVol
+    try {
       dayVol = await get24hVolume()
     } catch (ex) {
       next(ex)
@@ -55,8 +72,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      totalVolume: totalVol[0].total_volume,
-      dayVolume: dayVol[0].volume,
+      dayVolume: parseUnits(dayVol[0].volume.toString(), '30').toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
@@ -73,8 +89,8 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      totalShortPositionSizes: short[0].short_vol,
-      totalLongPositionSizes: long[0].long_vol,
+      totalShortPositionSizes: parseUnits(short[0].short_vol.toString(), '30').toString(),
+      totalLongPositionSizes: parseUnits(long[0].long_vol.toString(),'30').toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })

@@ -131,7 +131,7 @@ export const getUsers = async () => {
 }
 
 export const getTotalVolume = async () => {
-    const query = `SELECT SUM(usd_amount) as total_volume FROM volumes`;
+    const query = `SELECT SUM(usd_amount/1e30) as total_volume FROM volumes`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -142,7 +142,7 @@ export const getTotalVolume = async () => {
 
 export const get24hVolume = async () => {
     const prevTime = Math.floor(Date.now()/1000) - (60*60*24);
-    const query = `SELECT SUM(usd_amount) as volume FROM volumes WHERE timestamp > ${prevTime}`;
+    const query = `SELECT SUM(usd_amount/1e30) as volume FROM volumes WHERE timestamp > ${prevTime}`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -153,10 +153,10 @@ export const get24hVolume = async () => {
 
 export const getTotalLongPosition = async () => {
     const query = `SELECT *, (increase_vol - decrease_vol) AS long_vol FROM 
-            (SELECT IFNULL(SUM(token_amount/1e18)*1e18, 0) AS increase_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS increase_vol FROM volumes 
                 WHERE is_long = 1 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
-            (SELECT IFNULL(SUM(token_amount/1e18)*1e18, 0) AS decrease_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS decrease_vol FROM volumes 
                 WHERE is_long = 1 AND closed = 0 AND event = 'DecreasePosition')`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
@@ -168,10 +168,10 @@ export const getTotalLongPosition = async () => {
 
 export const getTotalShortPosition = async () => {
     const query = `SELECT *, (increase_vol - decrease_vol) AS short_vol FROM 
-            (SELECT IFNULL(SUM(token_amount/1e18)*1e18, 0) AS increase_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS increase_vol FROM volumes 
                 WHERE is_long = 0 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
-            (SELECT IFNULL(SUM(token_amount/1e18)*1e18, 0) AS decrease_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS decrease_vol FROM volumes 
                 WHERE is_long = 0 AND closed = 0 AND event = 'DecreasePosition')`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {

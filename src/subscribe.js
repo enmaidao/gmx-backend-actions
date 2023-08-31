@@ -143,8 +143,8 @@ const subscribePriceFeeds = () => {
         "IncreasePosition",
         account,
         indexToken,
-        collateralDelta.div("1000000000000"),
-        sizeDelta.div("1000000000000"),
+        collateralDelta,
+        sizeDelta,
         isLong ? 1 : 0,
         key
       );
@@ -169,8 +169,8 @@ const subscribePriceFeeds = () => {
         "DecreasePosition",
         account,
         indexToken,
-        collateralDelta.div("1000000000000"),
-        sizeDelta.div("1000000000000"),
+        collateralDelta,
+        sizeDelta,
         isLong ? 1 : 0,
         key
       );
@@ -195,7 +195,7 @@ const subscribePriceFeeds = () => {
         "Swap",
         account,
         tokenOut,
-        amountIn.mul(priceIn).div(ethers.utils.parseUnits("1", "30")),
+        amountIn.mul(priceIn).div(ethers.utils.parseUnits("1", "18")),
         amountOut
       );
     }
@@ -220,7 +220,7 @@ const subscribePriceFeeds = () => {
         "LiquidatePosition",
         account,
         indexToken,
-        size.mul(markPrice).div(ethers.utils.parseUnits("1", "42")),
+        size.mul(markPrice).div(ethers.utils.parseUnits("1", "30")),
         collateral,
         isLong ? 1 : 0,
         key
