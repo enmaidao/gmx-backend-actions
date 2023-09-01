@@ -8,7 +8,8 @@ import {
   get24hVolume,
   getTotalShortPosition,
   getTotalLongPosition,
-  getLastPrices
+  getLastPrices,
+  getActivePositions
 } from './utils/db.js'
 import { config } from "./config.js";
 
@@ -80,6 +81,21 @@ export default function routes(app) {
     res.send({
       dayVolume: parseUnits(dayVol[0].volume.toString(), '30').toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
+    })
+  })
+
+  app.get('/api/active_positions', async (req, res, next) => {
+    let activePositions
+    try {
+      activePositions = await getActivePositions()
+    } catch (ex) {
+      next(ex)
+      return
+    }
+
+    res.set('Cache-Control', 'max-age=60')
+    res.send({
+      positions: activePositions.map(row => row.key),
     })
   })
 

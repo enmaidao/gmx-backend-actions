@@ -190,3 +190,13 @@ export const getTotalShortPosition = async () => {
         })
     })
 }
+
+export const getActivePositions = async () => {
+    const query = `SELECT key FROM volumes WHERE event = 'IncreasePosition' AND closed = 0 GROUP BY key`;
+    return new Promise(resolve => {
+        db.all(query, (err, rows) => {
+            if (err) console.error(err.message);
+            resolve(rows);
+        })
+    })
+}
