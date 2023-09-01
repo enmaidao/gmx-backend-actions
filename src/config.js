@@ -5,6 +5,9 @@ export const config = {
     },
     contracts: {
         mainnet: {
+            OAS: "0x25EFc823DAcF53ce56A098eF02277d230610A12a",
+            BTC: "0x63a4a6313a84e888a307389dDfe651577664263B",
+            ETH: "0x84DB0f01dDB5cF8cf70FbC64470112A512F337Eb",
             oasPriceFeed: "0x73aA4990ACc809C3dB8e23eD42cd2a4F685883a7",
             btcPriceFeed: "0x37c2600512210b6D5F3082B12df7cEE89e61a001",
             ethPriceFeed: "0x1A0f6fA357A01FAD7105c0B47dD94bA555a4B696",
@@ -16,6 +19,9 @@ export const config = {
             glpRewardRouter: ""
         },
         testnet: {
+            OAS: "0x25EFc823DAcF53ce56A098eF02277d230610A12a",
+            BTC: "0x63a4a6313a84e888a307389dDfe651577664263B",
+            ETH: "0x84DB0f01dDB5cF8cf70FbC64470112A512F337Eb",
             oasPriceFeed: "0x73aA4990ACc809C3dB8e23eD42cd2a4F685883a7",
             btcPriceFeed: "0x37c2600512210b6D5F3082B12df7cEE89e61a001",
             ethPriceFeed: "0x1A0f6fA357A01FAD7105c0B47dD94bA555a4B696",

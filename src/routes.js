@@ -8,9 +8,15 @@ import {
   get24hVolume,
   getTotalShortPosition,
   getTotalLongPosition,
+  getLastPrices
 } from './utils/db.js'
+import { config } from "./config.js";
+
+const { NETWORK } = process.env;
+const contracts = config["contracts"][NETWORK];
 
 const { parseUnits } = ethers.utils;
+const AVAILABLE_TOKENS = ['BTC', 'ETH', 'OAS'];
 
 export default function routes(app) {
   app.get('/api/fees_summary', async (req, res, next) => {
@@ -93,6 +99,29 @@ export default function routes(app) {
       totalLongPositionSizes: parseUnits(long[0].long_vol.toString(),'30').toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
+  })
+
+  app.get('/api/prices', async (req, res, next) => {
+    let prices
+    try {
+      prices = await getLastPrices()
+    } catch (ex) {
+      next(ex)
+      return
+    }
+
+    const priceValues = prices.reduce((acc, price, index) => {
+      acc[price.token] = price.value;
+      return acc;
+    },{})
+
+    const data = AVAILABLE_TOKENS.reduce((acc, token, index) => {
+      acc[contracts[token]] = parseUnits(priceValues[token], 12).toString();
+      return acc;
+    },{})
+
+    res.set('Cache-Control', 'max-age=60')
+    res.send(data)
   })
 
   app.get('/api/candles/:symbol', async (req, res, next) => {

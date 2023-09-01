@@ -140,6 +140,16 @@ export const getTotalVolume = async () => {
     })
 }
 
+export const getLastPrices = async () => {
+    const query = `SELECT token, value, MAX(timestamp) AS timestamp FROM prices GROUP BY token;`;
+    return new Promise(resolve => {
+        db.all(query, (err, rows) => {
+            if (err) console.error(err.message);
+            resolve(rows);
+        })
+    })
+}
+
 export const get24hVolume = async () => {
     const prevTime = Math.floor(Date.now()/1000) - (60*60*24);
     const query = `SELECT SUM(usd_amount/1e30) as volume FROM volumes WHERE timestamp > ${prevTime}`;
