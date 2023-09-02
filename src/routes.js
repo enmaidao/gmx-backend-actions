@@ -132,7 +132,7 @@ export default function routes(app) {
     },{})
 
     const data = AVAILABLE_TOKENS.reduce((acc, token, index) => {
-      acc[contracts[token]] = parseUnits(priceValues[token], 12).toString();
+      acc[contracts[token]] = parseUnits(priceValues[token], 22).toString();
       return acc;
     },{})
 
