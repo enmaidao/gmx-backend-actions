@@ -152,7 +152,8 @@ export const getLastPrices = async () => {
 
 export const get24hVolume = async () => {
     const prevTime = Math.floor(Date.now()/1000) - (60*60*24);
-    const query = `SELECT SUM(usd_amount/1e30) as volume FROM volumes WHERE timestamp > ${prevTime}`;
+    const query = `SELECT IFNULL(SUM(usd_amount/1e30), 0) as volume FROM volumes WHERE timestamp > ${prevTime}`;
+    console.log(query)
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
