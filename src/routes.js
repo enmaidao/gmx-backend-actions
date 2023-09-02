@@ -79,7 +79,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      dayVolume: parseUnits(dayVol[0].volume.toString(), '30').toString(),
+      dayVolume: parseUnits(dayVol[0].volume.toString(), '18').toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
