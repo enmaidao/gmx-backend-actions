@@ -1,4 +1,5 @@
 import sqlite3 from 'sqlite3';
+import { ethers } from 'ethers'
 import { config } from '../config.js';
 
 const dbFile = config['sqlite3'];
@@ -58,6 +59,35 @@ export const initDB = () => {
     })
 }
 
+export const parseSqliteBigNumber = (numStr) => {
+    // if (isNaN(numStr) || typeof numStr === "number") {
+    //     return ethers.BigNumber.from(String(numStr));
+    // }
+
+    try {
+        return ethers.BigNumber.from(Math.round(numStr));
+    } catch {
+        // Continue to parse...
+    }
+
+    const items = numStr.split('e');
+
+    if (items.length !== 2) throw Error(`invalid number string->${numStr}`)
+
+    if (items[1] < 0) return ethers.BigNumber.from('0')
+
+    if (items[1] == 0) return ethers.BigNumber.from(Math.round(items[0]))
+
+    const fractions = items[0].split('.')
+    const secondFractionSize = fractions[1].length
+    let item0 = items[0]
+    if (secondFractionSize > items[1]) {
+        item0 = fractions[0] + '.' + fractions[1].substr(0, items[1])
+    }
+
+    return ethers.utils.parseUnits(item0, Number(items[1]));
+}
+
 export const insertPriceItem = (token, round, price, timestamp) => {
     db.serialize(() => {
         db.run(`INSERT INTO prices(token, round, value, timestamp)
@@ -111,7 +141,7 @@ export const getPrices = async (token, start = 0, end = 0) => {
 }
 
 export const getTotalFees = async () => {
-    const query = `SELECT SUM(usd_amount / 1e30) as total_fee FROM fees`;
+    const query = `SELECT IFNULL(SUM(usd_amount / 1e30), 0) as total_fee FROM fees`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -131,7 +161,7 @@ export const getUsers = async () => {
 }
 
 export const getTotalVolume = async () => {
-    const query = `SELECT SUM(usd_amount/1e30) as total_volume FROM volumes`;
+    const query = `SELECT SUM(usd_amount) as total_volume FROM volumes`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -152,7 +182,7 @@ export const getLastPrices = async () => {
 
 export const get24hVolume = async () => {
     const prevTime = Math.floor(Date.now()/1000) - (60*60*24);
-    const query = `SELECT IFNULL(SUM(usd_amount/1e18), 0) as volume FROM volumes WHERE timestamp > ${prevTime}`;
+    const query = `SELECT IFNULL(SUM(usd_amount), 0) as volume FROM volumes WHERE timestamp > ${prevTime}`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -163,10 +193,10 @@ export const get24hVolume = async () => {
 
 export const getTotalLongPosition = async () => {
     const query = `SELECT *, (increase_vol - decrease_vol) AS long_vol FROM 
-            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS increase_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount), 0) AS increase_vol FROM volumes
                 WHERE is_long = 1 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
-            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS decrease_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount), 0) AS decrease_vol FROM volumes
                 WHERE is_long = 1 AND closed = 0 AND event = 'DecreasePosition')`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
@@ -178,10 +208,10 @@ export const getTotalLongPosition = async () => {
 
 export const getTotalShortPosition = async () => {
     const query = `SELECT *, (increase_vol - decrease_vol) AS short_vol FROM 
-            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS increase_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount), 0) AS increase_vol FROM volumes
                 WHERE is_long = 0 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
-            (SELECT IFNULL(SUM(token_amount/1e30), 0) AS decrease_vol FROM volumes 
+            (SELECT IFNULL(SUM(token_amount), 0) AS decrease_vol FROM volumes
                 WHERE is_long = 0 AND closed = 0 AND event = 'DecreasePosition')`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {

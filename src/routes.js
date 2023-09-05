@@ -2,6 +2,7 @@ import { ethers } from 'ethers'
 import { createHttpError } from './utils'
 import { getPrices, VALID_PERIODS, PERIOD_TO_SECONDS } from './prices'
 import {
+  parseSqliteBigNumber,
   getTotalFees,
   getUsers,
   getTotalVolume,
@@ -63,7 +64,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      totalVolume: parseUnits(totalVol[0].total_volume.toString(), '30').toString(),
+      totalVolume: parseSqliteBigNumber(totalVol[0].total_volume.toString()).toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
@@ -79,7 +80,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      dayVolume: parseUnits(dayVol[0].volume.toString(), '18').toString(),
+      dayVolume: parseSqliteBigNumber(dayVol[0].volume.toString()).toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
@@ -111,8 +112,8 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      totalShortPositionSizes: parseUnits(short[0].short_vol.toString(), '30').toString(),
-      totalLongPositionSizes: parseUnits(long[0].long_vol.toString(),'30').toString(),
+      totalShortPositionSizes: parseSqliteBigNumber(short[0].short_vol.toString()).toString(),
+      totalLongPositionSizes: parseSqliteBigNumber(long[0].long_vol.toString()).toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
