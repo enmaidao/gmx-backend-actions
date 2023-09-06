@@ -10,7 +10,8 @@ import {
   getTotalShortPosition,
   getTotalLongPosition,
   getLastPrices,
-  getActivePositions
+  getActivePositions,
+  getOrders
 } from './utils/db.js'
 import { config } from "./config.js";
 
@@ -115,6 +116,26 @@ export default function routes(app) {
       totalShortPositionSizes: parseSqliteBigNumber(short[0].short_vol.toString()).toString(),
       totalLongPositionSizes: parseSqliteBigNumber(long[0].long_vol.toString()).toString(),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
+    })
+  })
+
+  app.get('/api/orders_indices', async (req, res, next) => {
+    const account = req.query.account;
+    let swap, increase, decrease;
+    try {
+      swap = await getOrders(account, "CreateSwapOrder");
+      increase = await getOrders(account, "CreateIncreaseOrder");
+      decrease = await getOrders(account, "CreateDecreaseOrder");
+    } catch (ex) {
+      next(ex)
+      return
+    }
+
+    res.set('Cache-Control', 'max-age=60')
+    res.send({
+      Swap: swap,
+      Increase: increase,
+      Decrease: decrease
     })
   })
 

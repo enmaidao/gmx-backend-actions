@@ -8,6 +8,7 @@ import {
   ethPriceFeed,
   vault,
   glpManager,
+  orderBook
 } from "./utils/web3.js";
 import {
   initDB,
@@ -61,8 +62,8 @@ const storeVolume = async (
   );
 };
 
-const updateVolume = async (key) => {
-  console.log("ClosePosition:", key);
+const updateVolume = async (event, key) => {
+  console.log(`${event}:, ${key}`);
   updateVolumeItem(key);
 };
 
@@ -225,7 +226,7 @@ const subscribePriceFeeds = () => {
         isLong ? 1 : 0,
         key
       );
-      updateVolume(key);
+      updateVolume('LiquidatePosition', key);
     }
   );
 
@@ -240,7 +241,198 @@ const subscribePriceFeeds = () => {
       reserveAmount,
       realisedPnl
     ) => {
-      updateVolume(key);
+      updateVolume('ClosePosition', key);
+    }
+  );
+
+  orderBook.on(
+    "CreateIncreaseOrder",
+    (
+      account,
+      orderIndex,
+      purchaseToken,
+      purchaseTokenAmcount,
+      collateralToken,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee
+    ) => {
+      storeVolume(
+        orderBook.address,
+        "CreateIncreaseOrder",
+        account,
+        indexToken,
+        purchaseTokenAmcount,
+        sizeDelta,
+        isLong ? 1 : 0,
+        orderIndex
+      );
+    }
+  );
+
+  orderBook.on(
+    "CancelIncreaseOrder",
+    (
+      account,
+      orderIndex,
+      purchaseToken,
+      purchaseTokenAmcount,
+      collateralToken,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee
+    ) => {
+      updateVolume('CancelIncreaseOrder', orderIndex);
+    }
+  );
+
+  orderBook.on(
+    "ExecuteIncreaseOrder",
+    (
+      account,
+      orderIndex,
+      purchaseToken,
+      purchaseTokenAmcount,
+      collateralToken,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee
+    ) => {
+      updateVolume('ExecuteIncreaseOrder', orderIndex);
+    }
+  );
+
+  orderBook.on(
+    "CreateDecreaseOrder",
+    (
+      account,
+      orderIndex,
+      collateralToken,
+      collateralDelta,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee
+    ) => {
+      storeVolume(
+        orderBook.address,
+        "CreateDecreaseOrder",
+        account,
+        indexToken,
+        collateralDelta,
+        sizeDelta,
+        isLong ? 1 : 0,
+        orderIndex
+      );
+    }
+  );
+
+  orderBook.on(
+    "CancelDecreaseOrder",
+    (
+      account,
+      orderIndex,
+      collateralToken,
+      collateralDelta,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee
+    ) => {
+      updateVolume('CancelDecreaseOrder', orderIndex);
+    }
+  );
+
+  orderBook.on(
+    "ExecuteDecreaseOrder",
+    (
+      account,
+      orderIndex,
+      collateralToken,
+      collateralDelta,
+      indexToken,
+      sizeDelta,
+      isLong,
+      triggerPrice,
+      triggerAboveThreshold,
+      executionFee,
+      executionPrice
+    ) => {
+      updateVolume('ExecuteDecreaseOrder', orderIndex);
+    }
+  );
+
+  orderBook.on(
+    "CreateSwapOrder",
+    (
+      account,
+      orderIndex,
+      path,
+      amountIn,
+      minOut,
+      triggerRatio,
+      triggerAboveThreshold,
+      shouldUnwrap,
+      executionFee
+    ) => {
+      storeVolume(
+        orderBook.address,
+        "CreateSwapOrder",
+        account,
+        path[0],
+        amountIn,
+        minOut,
+        0,
+        orderIndex
+      );
+    }
+  );
+
+  orderBook.on(
+    "CancelSwapOrder",
+    (
+      account,
+      orderIndex,
+      path,
+      amountIn,
+      minOut,
+      triggerRatio,
+      triggerAboveThreshold,
+      shouldUnwrap,
+      executionFee
+    ) => {
+      updateVolume('CancelSwapOrder', orderIndex);
+    }
+  );
+
+  orderBook.on(
+    "ExecuteSwapOrder",
+    (
+      account,
+      orderIndex,
+      path,
+      amountIn,
+      minOut,
+      amountOut,
+      triggerRatio,
+      triggerAboveThreshold,
+      shouldUnwrap,
+      executionFee
+    ) => {
+      updateVolume('ExecuteSwapOrder', orderIndex);
     }
   );
 

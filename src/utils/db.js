@@ -230,3 +230,13 @@ export const getActivePositions = async () => {
         })
     })
 }
+
+export const getOrders = async (account, type) => {
+    const query = `SELECT key as value FROM volumes WHERE account = '${account}' AND event = '${type}' AND closed = 0`;
+    return new Promise(resolve => {
+        db.all(query, (err, rows) => {
+            if (err) console.error(err.message);
+            resolve(rows);
+        })
+    })
+}

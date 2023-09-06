@@ -14,6 +14,7 @@ export const config = {
             usdcPriceFeed: "0x62405bC1570d82a93A6D2D75c86d352b22e1c633",
             vault: "0x5862b5acdDB1BD02b0222B26b0913D2ce9F585b0",
             positionRouter: "0xc19E4E7004C56Ca4465721d9E001eeEb5892adA1",
+            orderBook: "0x09f77E8A13De9a35a7231028187e9fD5DB8a2ACB",
             glpManager: "0xCF05648452b54Ded75995BCc1D9B5931590A85c1",
             gmxRewardRouter: "",
             glpRewardRouter: ""
@@ -28,6 +29,7 @@ export const config = {
             usdcPriceFeed: "0x62405bC1570d82a93A6D2D75c86d352b22e1c633",
             vault: "0x5862b5acdDB1BD02b0222B26b0913D2ce9F585b0",
             positionRouter: "0xc19E4E7004C56Ca4465721d9E001eeEb5892adA1",
+            orderBook: "0x3FBB7396D5D721e1f91Af03061b12580bB53da85",
             glpManager: "0xCF05648452b54Ded75995BCc1D9B5931590A85c1",
             gmxRewardRouter: "",
             glpRewardRouter: ""
