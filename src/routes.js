@@ -97,7 +97,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      positions: activePositions.map(row => row.key),
+      positions: activePositions,
     })
   })
 

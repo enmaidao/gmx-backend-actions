@@ -26,7 +26,8 @@ const CREATE_VOLUMES_TABLE = `CREATE TABLE IF NOT EXISTS volumes (
     event TEXT NOT NULL,
     key	TEXT,
     account TEXT NOT NULL,
-    token TEXT,
+    collateral_token TEXT,
+    index_token TEXT,
     usd_amount TEXT,
     token_amount TEXT,
     closed	INTEGER NOT NULL DEFAULT 0,
@@ -107,11 +108,11 @@ export const insertFeeItem = (token, usdAmount, tokenAmount) => {
     })
 }
 
-export const insertVolumeItem = (contract, event, account, token, usdAmount, tokenAmount, isLong, key) => {
+export const insertVolumeItem = (contract, event, account, collateralToken, indexToken, usdAmount, tokenAmount, isLong, key) => {
     const timestamp = Math.floor(Date.now()/1000);
     db.serialize(() => {
-        db.run(`INSERT INTO volumes(contract, event, key, account, token, usd_amount, token_amount, is_long, timestamp)
-        VALUES('${contract}', '${event}', '${key}', '${account}', '${token}', '${usdAmount}', '${tokenAmount}', '${isLong}', '${timestamp}')`, (ret, err) => {
+        db.run(`INSERT INTO volumes(contract, event, key, account, collateral_token, index_token, usd_amount, token_amount, is_long, timestamp)
+        VALUES('${contract}', '${event}', '${key}', '${account}', '${collateralToken}', '${indexToken}', '${usdAmount}', '${tokenAmount}', '${isLong}', '${timestamp}')`, (ret, err) => {
             if (err) console.error(err.message);
         });
     })
@@ -222,7 +223,7 @@ export const getTotalShortPosition = async () => {
 }
 
 export const getActivePositions = async () => {
-    const query = `SELECT key FROM volumes WHERE event = 'IncreasePosition' AND closed = 0 GROUP BY key`;
+    const query = `SELECT key, account, collateral_token, index_token, is_long FROM volumes WHERE (event = 'IncreasePosition' OR event = 'DecreasePosition') AND closed = 0 GROUP BY key`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);

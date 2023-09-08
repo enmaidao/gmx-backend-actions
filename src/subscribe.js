@@ -37,7 +37,8 @@ const storeVolume = async (
   contract,
   event,
   account,
-  token,
+  collateralToken,
+  indexToken,
   usdAmount,
   tokenAmount,
   isLong = 0,
@@ -46,7 +47,8 @@ const storeVolume = async (
   console.log(
     event,
     account,
-    token,
+    collateralToken,
+    indexToken,
     usdAmount.toString(),
     tokenAmount.toString()
   );
@@ -54,7 +56,8 @@ const storeVolume = async (
     contract,
     event,
     account,
-    token,
+    collateralToken,
+    indexToken,
     usdAmount,
     tokenAmount,
     isLong,
@@ -98,6 +101,7 @@ const subscribePriceFeeds = () => {
         "AddLiquidity",
         account,
         token,
+        "",
         usdgAmount,
         amount
       );
@@ -120,6 +124,7 @@ const subscribePriceFeeds = () => {
         "RemoveLiquidity",
         account,
         token,
+        "",
         usdgAmount,
         amountOut
       );
@@ -143,6 +148,7 @@ const subscribePriceFeeds = () => {
         vault.address,
         "IncreasePosition",
         account,
+        collateralToken,
         indexToken,
         collateralDelta,
         sizeDelta,
@@ -169,6 +175,7 @@ const subscribePriceFeeds = () => {
         vault.address,
         "DecreasePosition",
         account,
+        collateralToken,
         indexToken,
         collateralDelta,
         sizeDelta,
@@ -196,6 +203,7 @@ const subscribePriceFeeds = () => {
         "Swap",
         account,
         tokenOut,
+        "",
         amountIn.mul(priceIn).div(ethers.utils.parseUnits("1", "18")),
         amountOut
       );
@@ -220,6 +228,7 @@ const subscribePriceFeeds = () => {
         vault.address,
         "LiquidatePosition",
         account,
+        collateralToken,
         indexToken,
         size.mul(markPrice).div(ethers.utils.parseUnits("1", "30")),
         collateral,
@@ -264,6 +273,7 @@ const subscribePriceFeeds = () => {
         orderBook.address,
         "CreateIncreaseOrder",
         account,
+        collateralToken,
         indexToken,
         purchaseTokenAmcount,
         sizeDelta,
@@ -329,6 +339,7 @@ const subscribePriceFeeds = () => {
         orderBook.address,
         "CreateDecreaseOrder",
         account,
+        collateralToken,
         indexToken,
         collateralDelta,
         sizeDelta,
@@ -393,6 +404,7 @@ const subscribePriceFeeds = () => {
         "CreateSwapOrder",
         account,
         path[0],
+        path[path.length-1],
         amountIn,
         minOut,
         0,
