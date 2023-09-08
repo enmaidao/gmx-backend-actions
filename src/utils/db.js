@@ -193,12 +193,14 @@ export const get24hVolume = async () => {
 }
 
 export const getTotalLongPosition = async () => {
-    const query = `SELECT *, (increase_vol - decrease_vol) AS long_vol FROM 
+    const query = `SELECT IIF(long_vol < 0, 0, long_vol) AS long_vol FROM
+            (SELECT *, (increase_vol - decrease_vol) AS long_vol FROM 
             (SELECT IFNULL(SUM(token_amount), 0) AS increase_vol FROM volumes
                 WHERE is_long = 1 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
             (SELECT IFNULL(SUM(token_amount), 0) AS decrease_vol FROM volumes
-                WHERE is_long = 1 AND closed = 0 AND event = 'DecreasePosition')`;
+                WHERE is_long = 1 AND closed = 0 AND event = 'DecreasePosition')
+            )`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
@@ -208,12 +210,14 @@ export const getTotalLongPosition = async () => {
 }
 
 export const getTotalShortPosition = async () => {
-    const query = `SELECT *, (increase_vol - decrease_vol) AS short_vol FROM 
+    const query = `SELECT IIF(short_vol < 0, 0, short_vol) AS short_vol FROM
+            (SELECT *, (increase_vol - decrease_vol) AS short_vol FROM 
             (SELECT IFNULL(SUM(token_amount), 0) AS increase_vol FROM volumes
                 WHERE is_long = 0 AND closed = 0 AND event = 'IncreasePosition')
             LEFT OUTER JOIN 
             (SELECT IFNULL(SUM(token_amount), 0) AS decrease_vol FROM volumes
-                WHERE is_long = 0 AND closed = 0 AND event = 'DecreasePosition')`;
+                WHERE is_long = 0 AND closed = 0 AND event = 'DecreasePosition')
+            )`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);
