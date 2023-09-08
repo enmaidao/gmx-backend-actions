@@ -33,7 +33,7 @@ export default function routes(app) {
 
     res.set('Cache-Control', 'max-age=60')
     res.send({
-      totalFees: totalFees[0].total_fee,
+      totalFees: Math.round(totalFees[0].total_fee),
       lastUpdatedAt: Math.floor(Date.now() / 1000),
     })
   })
