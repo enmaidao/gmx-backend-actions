@@ -27,12 +27,12 @@ export const config = {
             btcPriceFeed: "0xAEB63607f068D64a14E3cEe5f969930D9F18BE50",
             ethPriceFeed: "0x95ADD3099c78b17CA200832dB2c1898916A67aA2",
             usdcPriceFeed: "0xd394E29e57212255bCaE7cAFaecedae8687E8ab2",
-            vault: "0xd1E1885B66D48a603663D5239939249e9A463d9d",
-            positionRouter: "0x2cbCa7d8cEF79F1c0AA6a885eB0C69214abfaac6",
-            orderBook: "0xdFa2B764B2D736b38bf3Cd6f9e6a668aACEE925e",
-            glpManager: "0x919BEdFfE897c215D56730f4406348E53aCBe5d3",
-            gmxRewardRouter: "0xc7aCB0636686475B0CaCae648544e89CcC286f8F",
-            glpRewardRouter: "0xcE1AC872c323d0029C4C0e7D78744A38cA576390"
+            vault: "0x8011f638886457879F732b9D8c66a900866F326d",
+            positionRouter: "0x0177F804B230F08D3725Dd95806996b395EF13A2",
+            orderBook: "0xBca8a3F2d8bcB79539Ac026BDa924Db97bA210E5",
+            glpManager: "0x0443C7F99AfedD57AC3F0c248683dc68A732c7cA",
+            gmxRewardRouter: "0xEaF39cfb82855e4a86740D25c3c50076f4FD0550",
+            glpRewardRouter: "0x2Bfb02d164745B326D1c005245F66dbbB5F7076D"
         }
     },
     sqlite3: "./db/prices.db"
