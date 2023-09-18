@@ -124,6 +124,13 @@ export const updateVolumeItem = (key) => {
     })
 }
 
+export const updateOrderBookItem = (account, event, key) => {
+    const query = `UPDATE volumes SET closed = 1 WHERE account = '${account}' AND event='${event}' AND key = '${key}' AND closed = 0`;
+    db.serialize(() => {
+        db.run(query);
+    })
+}
+
 export const getPrices = async (token, start = 0, end = 0) => {
     const startTime = Number(start) > 1690862400 ? Number(start) : 1690862400;
     let endTime = end == 0 ? Math.floor(Date.now()/1000): Number(end);
@@ -227,7 +234,7 @@ export const getTotalShortPosition = async () => {
 }
 
 export const getActivePositions = async () => {
-    const query = `SELECT key, account, collateral_token, index_token, is_long FROM volumes WHERE (event = 'IncreasePosition' OR event = 'DecreasePosition') AND closed = 0 GROUP BY key`;
+    const query = `SELECT key, account, collateral_token, index_token, is_long FROM volumes WHERE (event = 'IncreasePosition' OR event = 'DecreasePosition') AND usd_amount > 0 AND closed = 0 GROUP BY key`;
     return new Promise(resolve => {
         db.all(query, (err, rows) => {
             if (err) console.error(err.message);

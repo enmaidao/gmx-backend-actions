@@ -17,6 +17,7 @@ import {
   insertFeeItem,
   insertVolumeItem,
   updateVolumeItem,
+  updateOrderBookItem
 } from "./utils/db.js";
 import { config } from "./config.js";
 
@@ -66,8 +67,13 @@ const storeVolume = async (
 };
 
 const updateVolume = async (event, key) => {
-  console.log(`${event}:, ${key}`);
+  console.log(`${event}: ${key}`);
   updateVolumeItem(key);
+};
+
+const updateOrderBook = async (event, account, target, key) => {
+  console.log(`${event}: ${account}, ${target}, ${key}`);
+  updateOrderBookItem(account, target, key);
 };
 
 const subscribePriceFeeds = () => {
@@ -298,7 +304,7 @@ const subscribePriceFeeds = () => {
       triggerAboveThreshold,
       executionFee
     ) => {
-      updateVolume('CancelIncreaseOrder', orderIndex);
+      updateOrderBook('CancelIncreaseOrder', account, 'CreateIncreaseOrder', orderIndex);
     }
   );
 
@@ -317,7 +323,7 @@ const subscribePriceFeeds = () => {
       triggerAboveThreshold,
       executionFee
     ) => {
-      updateVolume('ExecuteIncreaseOrder', orderIndex);
+      updateOrderBook('ExecuteIncreaseOrder', account, 'CreateIncreaseOrder', orderIndex);
     }
   );
 
@@ -363,7 +369,7 @@ const subscribePriceFeeds = () => {
       triggerAboveThreshold,
       executionFee
     ) => {
-      updateVolume('CancelDecreaseOrder', orderIndex);
+      updateOrderBook('CancelDecreaseOrder', account, 'CreateDecreaseOrder', orderIndex);
     }
   );
 
@@ -382,7 +388,7 @@ const subscribePriceFeeds = () => {
       executionFee,
       executionPrice
     ) => {
-      updateVolume('ExecuteDecreaseOrder', orderIndex);
+      updateOrderBook('ExecuteDecreaseOrder', account, 'CreateDecreaseOrder', orderIndex);
     }
   );
 
@@ -426,7 +432,7 @@ const subscribePriceFeeds = () => {
       shouldUnwrap,
       executionFee
     ) => {
-      updateVolume('CancelSwapOrder', orderIndex);
+      updateOrderBook('CancelSwapOrder', account, 'CreateSwapOrder', orderIndex);
     }
   );
 
@@ -444,7 +450,7 @@ const subscribePriceFeeds = () => {
       shouldUnwrap,
       executionFee
     ) => {
-      updateVolume('ExecuteSwapOrder', orderIndex);
+      updateOrderBook('ExecuteSwapOrder', account, 'CreateSwapOrder', orderIndex);
     }
   );
 
